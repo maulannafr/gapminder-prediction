@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Model Prediction (gapminder)</title>
+  <style>
+    body { font-family: Inter, system-ui, sans-serif; background:#f6f8fa; margin:0; padding:0; display:flex; align-items:center; justify-content:center; min-height:100vh; }
+    .card { background:#fff; padding:20px; border-radius:10px; box-shadow:0 6px 18px rgba(2,6,23,0.07); width:92%; max-width:600px; }
+    h1 { color:#0b5ed7; text-align:center; margin:0 0 12px; }
+    form { display:flex; flex-direction:column; gap:10px; }
+    label { font-size:0.9rem; font-weight:600; }
+    input, select, button { padding:10px 12px; border-radius:8px; border:1px solid #e6e9ef; font-size:0.95rem; }
+    button { background:#0b5ed7; color:#fff; border:none; cursor:pointer; padding:11px; }
+    .result { margin-top:12px; padding:10px; border-radius:8px; background:#f1f5ff; font-weight:700; text-align:center; }
+    .small { font-size:0.9rem; color:#666; margin-top:8px; text-align:center; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Model Prediction</h1>
+
+    <form method="POST" action="/predict" id="form">
+      <label for="model">Model</label>
+      <select name="model" id="model">
+        <!-- value adalah index model sehingga server tahu model ke-berapa yg dipilih -->
+        {% for name in model_display_names %}
+          <option value="{{ loop.index0 }}">{{ name }}</option>
+        {% endfor %}
+      </select>
+
+      <!-- generate input fields sesuai feature_names -->
+      {% for feat in feature_names %}
+      <label for="{{ feat }}">{{ feat }}</label>
+      <input type="number" step="any" name="{{ feat }}" id="{{ feat }}"
+             value="{{ input_values[feat] if input_values and input_values[feat] is defined else '' }}" required />
+      {% endfor %}
+
+      <button type="submit">Predict</button>
+    </form>
+
+    {% if prediction %}
+    <div class="result">{{ prediction }}</div>
+    {% else %}
+    <div class="small">Isi field lalu tekan Predict.</div>
+    {% endif %}
+  </div>
+
+  <script>
+    const form = document.getElementById('form');
+    form.addEventListener('submit', () => {
+      const btn = form.querySelector('button');
+      btn.textContent = 'Predicting...';
+      btn.disabled = true;
+    });
+  </script>
+</body>
+</html>
